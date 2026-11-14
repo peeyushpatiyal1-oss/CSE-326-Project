@@ -1,0 +1,237 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DriveEase | Vehicle Rental Platform</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+
+  <!-- Top Navigation Bar -->
+  <header class="navbar">
+    <div class="logo">DriveEase Rentals</div>
+    <nav class="nav-links">
+      <button id="btnCustomer" class="nav-btn active" onclick="switchTab('customer')">Customer Portal</button>
+      <button id="btnAdmin" class="nav-btn" onclick="switchTab('admin')">Provider / Admin Dashboard</button>
+    </nav>
+  </header>
+
+  <!-- Live Notification Bar -->
+  <div id="notificationBar" class="notification">
+    Welcome to DriveEase! Browse Cars, Bikes & Scooters or register to book instantly.
+  </div>
+
+  <!-- Hero Section -->
+  <section class="hero">
+    <h1>Smart Vehicle Rental & Fleet Management</h1>
+    <p>Browse vehicles, compare pricing, check availability, book with flexible dates, and track your rentals.</p>
+  </section>
+
+  <!-- ==================== CUSTOMER PORTAL ==================== -->
+  <main id="customerSection" class="container">
+
+    <!-- Module 1: Quick User Registration -->
+    <section class="card-box">
+      <h2>1. Customer Registration</h2>
+      <div class="form-row">
+        <input type="text" id="regName" placeholder="Full Name" />
+        <input type="email" id="regEmail" placeholder="Email Address" />
+        <input type="text" id="regPhone" placeholder="Phone Number" />
+        <button class="btn-primary" onclick="registerUser()">Register / Update Profile</button>
+      </div>
+      <p id="activeUserDisplay" class="status-note">Active Guest: Not Registered Yet</p>
+    </section>
+
+    <!-- Module 2: Browse & Filter Vehicles -->
+    <section class="card-box">
+      <div class="section-header">
+        <h2>2. Available Vehicles</h2>
+        <div>
+          <label><strong>Filter Category:</strong></label>
+          <select id="categoryFilter" onchange="renderVehicles()">
+            <option value="All">All Vehicles</option>
+            <option value="Car">Cars</option>
+            <option value="Bike">Bikes</option>
+            <option value="Scooter">Scooters</option>
+          </select>
+        </div>
+      </div>
+      <div id="vehicleGrid" class="vehicle-grid"></div>
+    </section>
+
+    <!-- Module 3: Compare Rental Options -->
+    <section class="card-box">
+      <h2>3. Compare Rental Options</h2>
+      <div class="form-row">
+        <select id="compareSelect1"></select>
+        <select id="compareSelect2"></select>
+        <button class="btn-secondary" onclick="compareVehicles()">Compare Side-by-Side</button>
+      </div>
+      <div id="compareResult"></div>
+    </section>
+
+    <!-- Module 4: Booking & Payment System -->
+    <section class="card-box">
+      <h2>4. Book Vehicle & Payment</h2>
+      <form oninput="calculateTotal()">
+        <div class="form-grid">
+          <div>
+            <label>Select Vehicle:</label>
+            <select id="bookVehicleSelect" onchange="calculateTotal()"></select>
+          </div>
+          <div>
+            <label>Pickup Date:</label>
+            <input type="date" id="pickupDate" />
+          </div>
+          <div>
+            <label>Return Date:</label>
+            <input type="date" id="returnDate" />
+          </div>
+          <div>
+            <label>Rental Days:</label>
+            <input type="number" id="rentalDays" value="1" min="1" max="30" />
+          </div>
+          <div>
+            <label>Payment Method:</label>
+            <select id="paymentMethod">
+              <option value="UPI / QR">UPI / QR</option>
+              <option value="Credit / Debit Card">Credit / Debit Card</option>
+              <option value="Net Banking">Net Banking</option>
+              <option value="Pay at Pickup">Pay at Pickup</option>
+            </select>
+          </div>
+        </div>
+        <div class="total-bar">
+          <span>Estimated Total Payable: <strong>₹<span id="totalCostText">0</span></strong></span>
+          <button type="button" class="btn-primary" onclick="confirmBooking()">Confirm & Pay</button>
+        </div>
+      </form>
+    </section>
+
+    <!-- Module 5: Booking History & Rental Status Tracking -->
+    <section class="card-box">
+      <h2>5. My Booking History & Rental Tracking</h2>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Customer</th>
+              <th>Vehicle</th>
+              <th>Dates & Days</th>
+              <th>Amount & Payment</th>
+              <th>Rental Status</th>
+            </tr>
+          </thead>
+          <tbody id="customerBookingTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Module 6: Customer Reviews -->
+    <section class="card-box">
+      <h2>6. Customer Reviews & Ratings</h2>
+      <div class="form-row">
+        <input type="text" id="revName" placeholder="Your Name" />
+        <select id="revVehicle"></select>
+        <select id="revRating">
+          <option value="★★★★★ (5/5)">★★★★★ (5/5)</option>
+          <option value="★★★★☆ (4/5)">★★★★☆ (4/5)</option>
+          <option value="★★★☆☆ (3/5)">★★★☆☆ (3/5)</option>
+        </select>
+        <input type="text" id="revComment" placeholder="Write your rental experience..." />
+        <button class="btn-primary" onclick="addReview()">Post Review</button>
+      </div>
+      <div id="reviewsList" class="reviews-container"></div>
+    </section>
+  </main>
+
+  <!-- ==================== ADMIN / PROVIDER DASHBOARD ==================== -->
+  <main id="adminSection" class="container hidden">
+
+    <!-- Admin Summary Stats -->
+    <div class="stats-grid">
+      <div class="stat-card">
+        <h3 id="statTotalVehicles">0</h3>
+        <p>Total Fleet Vehicles</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="statAvailable">0</h3>
+        <p>Available Now</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="statBookings">0</h3>
+        <p>Total Bookings</p>
+      </div>
+      <div class="stat-card">
+        <h3 id="statRevenue">₹0</h3>
+        <p>Total Revenue</p>
+      </div>
+    </div>
+
+    <!-- Admin Module A: Add New Vehicle Listing -->
+    <section class="card-box">
+      <h2>Add New Vehicle to Fleet</h2>
+      <div class="form-row">
+        <input type="text" id="newVehName" placeholder="Vehicle Name (e.g., Tata Nexon)" />
+        <select id="newVehType">
+          <option value="Car">Car</option>
+          <option value="Bike">Bike</option>
+          <option value="Scooter">Scooter</option>
+        </select>
+        <input type="number" id="newVehPrice" placeholder="Price / Day (₹)" />
+        <input type="text" id="newVehSpecs" placeholder="Specs (e.g., Petrol • Manual)" />
+        <button class="btn-primary" onclick="addNewVehicle()">Add Vehicle</button>
+      </div>
+    </section>
+
+    <!-- Admin Module B: Fleet Availability & Maintenance Management -->
+    <section class="card-box">
+      <h2>Fleet Availability & Maintenance Schedule</h2>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Vehicle Name</th>
+              <th>Category</th>
+              <th>Daily Rate</th>
+              <th>Status</th>
+              <th>Maintenance Note</th>
+              <th>Action</th>
+            </tr>
+          </thead>
+          <tbody id="adminFleetTable"></tbody>
+        </table>
+      </div>
+    </section>
+
+    <!-- Admin Module C: Manage Customer Bookings & Requests -->
+    <section class="card-box">
+      <h2>Customer Booking Requests & Status Control</h2>
+      <div class="table-scroll">
+        <table>
+          <thead>
+            <tr>
+              <th>Booking ID</th>
+              <th>Customer</th>
+              <th>Vehicle</th>
+              <th>Duration & Total</th>
+              <th>Payment</th>
+              <th>Current Status</th>
+              <th>Update Status</th>
+            </tr>
+          </thead>
+          <tbody id="adminBookingTable"></tbody>
+        </table>
+      </div>
+    </section>
+  </main>
+
+  <footer class="footer">
+    <p>CSE326 Web Technologies Project | DriveEase Vehicle Rental Platform</p>
+  </footer>
+
+  <script src="script.js"></script>
+</body>
+</html>
